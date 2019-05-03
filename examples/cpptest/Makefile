@@ -5,13 +5,14 @@ MKDFSPATH = $(ROOTDIR)/bin/mkdfs
 HEADERPATH = $(ROOTDIR)/mips64-elf/lib
 N64TOOL = $(ROOTDIR)/bin/n64tool
 HEADERNAME = header
-LINK_FLAGS = -G32767 -L$(ROOTDIR)/mips64-elf/lib -ldragonpp -lc -lm -ldragonsys -Tn64ld_cpp.x
+LINK_FLAGS = -G32767 -L$(ROOTDIR)/mips64-elf/lib -ldragonpp -lc -lm -ldragonsys -Tn64ld_exp_cpp.x
 CFLAGS = -std=c++17 -march=vr4300 -mtune=vr4300 -O2 -G32767 -Wall -Werror -I$(ROOTDIR)/mips64-elf/include
 ASFLAGS = -mtune=vr4300 -march=vr4300
 CC = $(GCCN64PREFIX)gcc
 AS = $(GCCN64PREFIX)as
 LD = $(GCCN64PREFIX)ld
 OBJCOPY = $(GCCN64PREFIX)objcopy
+OBJDUMP = $(GCCN64PREFIX)objdump
 
 ifeq ($(N64_BYTE_SWAP),true)
 ROM_EXTENSION = .v64
@@ -32,12 +33,13 @@ $(PROG_NAME)$(ROM_EXTENSION): $(PROG_NAME).elf
 $(PROG_NAME).elf: $(PROG_NAME).cpp
 	$(CC) $(PROG_NAME).cpp -o $(PROG_NAME).elf $(LINK_FLAGS) $(C_FLAGS)
 
-all: $(PROG_NAME)$(ROM_EXTENSION)
+all: $(PROG_NAME)$(ROM_EXTENSION) disassemble
 
 disassemble: $(PROG_NAME).S
 
 $(PROG_NAME).S: $(PROG_NAME).elf
 	$(CC) -S -fverbose-asm -g -O2 $(PROG_NAME).cpp -o $(PROG_NAME).S
+	$(OBJDUMP) --disassemble-all $(PROG_NAME).elf > dump.txt
 
 clean:
 	rm -f *.v64 *.z64 *.elf *.o *.bin
