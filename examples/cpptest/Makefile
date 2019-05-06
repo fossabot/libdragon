@@ -5,8 +5,8 @@ MKDFSPATH = $(ROOTDIR)/bin/mkdfs
 HEADERPATH = $(ROOTDIR)/mips64-elf/lib
 N64TOOL = $(ROOTDIR)/bin/n64tool
 HEADERNAME = header
-LINK_FLAGS = -G32767 -L$(ROOTDIR)/mips64-elf/lib -ldragonpp -lc -lm -ldragonsys -Tn64ld_exp_cpp.x
-CFLAGS = -std=c++17 -march=vr4300 -mtune=vr4300 -O2 -G32767 -Wall -Werror -I$(ROOTDIR)/mips64-elf/include
+LINK_FLAGS = -G0 -L$(ROOTDIR)/mips64-elf/lib -ldragon -lc -lm -lstdc++ -ldragonsys -Tn64.ld
+CFLAGS = -std=c++11 -march=vr4300 -mtune=vr4300 -O2 -G0 -Wall -Werror -I$(ROOTDIR)/mips64-elf/include
 ASFLAGS = -mtune=vr4300 -march=vr4300
 CC = $(GCCN64PREFIX)gcc
 AS = $(GCCN64PREFIX)as
@@ -30,16 +30,18 @@ $(PROG_NAME)$(ROM_EXTENSION): $(PROG_NAME).elf
 	$(N64TOOL) $(N64_FLAGS) -t "Controller Test"
 	$(CHKSUM64PATH) $(PROG_NAME)$(ROM_EXTENSION)
 
-$(PROG_NAME).elf: $(PROG_NAME).cpp
-	$(CC) $(PROG_NAME).cpp -o $(PROG_NAME).elf $(LINK_FLAGS) $(C_FLAGS)
+# $(PROG_NAME).elf: $(PROG_NAME).cpp
+# 	$(CC) $(PROG_NAME).cpp -o $(PROG_NAME).elf $(LINK_FLAGS) $(C_FLAGS)
 
-all: $(PROG_NAME)$(ROM_EXTENSION) disassemble
 
-disassemble: $(PROG_NAME).S
+$(PROG_NAME).o: $(PROG_NAME).cpp
+	$(CC) -c -o $@ $< $(CFLAGS)
 
-$(PROG_NAME).S: $(PROG_NAME).elf
-	$(CC) -S -fverbose-asm -g -O2 $(PROG_NAME).cpp -o $(PROG_NAME).S
-	$(OBJDUMP) --disassemble-all $(PROG_NAME).elf > dump.txt
+$(PROG_NAME).elf: $(PROG_NAME).o
+	$(LD) -o $@ $^ $(LINK_FLAGS)
+
+all: $(PROG_NAME)$(ROM_EXTENSION)
+
 
 clean:
 	rm -f *.v64 *.z64 *.elf *.o *.bin

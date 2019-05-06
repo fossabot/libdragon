@@ -24,7 +24,7 @@ ENTRY (_start)
 
 MEMORY
 {
-	mem	:	ORIGIN = 0x80000400, LENGTH =  8M-0x0400
+	mem	:	ORIGIN = 0x80000400, LENGTH =  4M-0x0400
 }
 
 SECTIONS {
@@ -80,15 +80,13 @@ SECTIONS {
 		 *(.gnu.linkonce.d.*)
    } > mem
 
-   . = ALIGN(16);
-   _gp = . + 0x8000;
-
    .got : {
     *(.got.plt)
     *(.got)
    } > mem
 
    .sdata : {
+    _gp = . + 0x8000;
     *(.sdata)
     *(.sdata.*)
 	*(.gnu.linkonce.s.*)
