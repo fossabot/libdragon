@@ -58,7 +58,7 @@ make install || sudo make install || su -c "make install"
 
 # Compile newlib
 cd ../newlib-$NEWLIB_V
-CFLAGS="-G0 -O2" CXXFLAGS="-G0 -O2" ./configure --target=mips64-elf --prefix=${INSTALL_PATH} --with-cpu=mips64vr4300 --disable-threads --disable-libssp  --disable-werror
+CFLAGS="-O2" CXXFLAGS="-O2" CFLAGS_FOR_TARGET="-G0 -O2" CXXFLAGS_FOR_TARGET="-G0 -O2" ./configure --target=mips64-elf --prefix=${INSTALL_PATH} --with-cpu=mips64vr4300 --disable-threads --disable-libssp  --disable-werror
 make --jobs $JOBS
 make install || sudo env PATH="$PATH" make install || su -c "env PATH=$PATH make install"
 
