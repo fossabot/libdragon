@@ -26,9 +26,9 @@ export JOBS=${JOBS:-1}
 export PATH=$PATH:$INSTALL_PATH/bin
 
 # Versions
-export BINUTILS_V=2.27
-export GCC_V=6.2.0
-export NEWLIB_V=2.4.0
+export BINUTILS_V=2.32
+export GCC_V=9.1.0
+export NEWLIB_V=3.1.0
 
 # Download stage
 wget -c ftp://sourceware.org/pub/binutils/releases/binutils-$BINUTILS_V.tar.bz2
