@@ -1,6 +1,6 @@
 FROM ubuntu:16.04
 
-RUN apt-get update && apt-get install -yq wget bzip2 gcc g++ make file libmpfr-dev libmpc-dev libpng-dev zlib1g-dev texinfo git && apt-get clean
+RUN apt-get update && apt-get install -yq wget bzip2 gcc g++ make file libmpfr-dev libmpc-dev libpng-dev zlib1g-dev texinfo git nodejs npm && apt-get clean
 
 ENV N64_INST=/usr/local
 

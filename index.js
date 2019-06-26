@@ -35,6 +35,11 @@ function runCommand(cmd) {
 }
 
 async function startToolchain() {
+  // Do not try to run docker if already in container
+  if (process.env.IS_DOCKER === 'true') {
+    return;
+  }
+
   const containerID = await runCommand('docker container ls -q -f name=^' + options.PROJECT_NAME + '');
 
   if (containerID) {
@@ -43,6 +48,7 @@ async function startToolchain() {
 
   await runCommand('docker run --name=' + options.PROJECT_NAME
     + (options.BYTE_SWAP ? ' -e N64_BYTE_SWAP=true' : '')
+    + ' -e IS_DOCKER=true'
     + ' -e LIBDRAGON_VERSION_MAJOR=' + options.VERSION[0]
     + ' -e LIBDRAGON_VERSION_MINOR=' + options.VERSION[1]
     + ' -e LIBDRAGON_VERSION_REVISION=' + options.VERSION[2]
@@ -51,17 +57,30 @@ async function startToolchain() {
 }
 
 async function make(param) {
+  // Do not try to run docker if already in container
+  if (process.env.IS_DOCKER === 'true') {
+    await runCommand('make ' + param);
+    return;
+  }
   await runCommand('docker start ' + options.PROJECT_NAME);
   await runCommand('docker exec ' + options.PROJECT_NAME + ' make ' + param);
 }
 
 async function download() {
+  // Do not try to run docker if already in container
+  if (process.env.IS_DOCKER === 'true') {
+    return;
+  }
   await runCommand('docker pull anacierdem/libdragon:base');
   await runCommand('docker pull anacierdem/libdragon:' + version);
   await startToolchain();
 }
 
 async function stop() {
+  // Do not try to run docker if already in container
+  if (process.env.IS_DOCKER === 'true') {
+    return;
+  }
   const list = await runCommand('docker ps -a -q -f name=' + options.PROJECT_NAME);
   if (list) {
     await runCommand('docker rm -f ' + options.PROJECT_NAME);
@@ -72,6 +91,10 @@ const availableActions = {
   start: startToolchain,
   download: download,
   init: async function initialize() {
+    // Do not try to run docker if already in container
+    if (process.env.IS_DOCKER === 'true') {
+      return;
+    }
     await runCommand('docker build -q -t anacierdem/libdragon:' + version + ' ./');
     await startToolchain();
   },
@@ -100,7 +123,13 @@ const availableActions = {
             const relativePath = path.relative(options.MOUNT_PATH, paths[0]).replace(new RegExp('\\' + path.sep), path.posix.sep);
             const containerPath = path.posix.join('/', options.PROJECT_NAME, relativePath, '/');
             const makePath = path.posix.join(containerPath, 'Makefile');
-            await runCommand('docker exec ' + options.PROJECT_NAME + ' /bin/bash -c "[ -f ' + makePath + ' ] &&  make -C ' + containerPath + ' && make -C ' + containerPath + ' install"');
+
+            // Do not try to run docker if already in container
+            if (process.env.IS_DOCKER === 'true') {
+              await runCommand('[ -f ' + makePath + ' ] &&  make -C ' + containerPath + ' && make -C ' + containerPath + ' install');
+            } else {
+              await runCommand('docker exec ' + options.PROJECT_NAME + ' /bin/bash -c "[ -f ' + makePath + ' ] &&  make -C ' + containerPath + ' && make -C ' + containerPath + ' install"');
+            }
             resolve();
           } catch(e) {
             reject(e);
@@ -113,6 +142,10 @@ const availableActions = {
   stop: stop,
   // This requires docker login
   update: async function update() {
+    // Do not try to run docker if already in container
+    if (process.env.IS_DOCKER === 'true') {
+      return;
+    }
     await stop();
     await runCommand('docker build' 
     + ' --build-arg LIBDRAGON_VERSION_MAJOR=' + options.VERSION[0]
