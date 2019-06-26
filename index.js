@@ -95,7 +95,7 @@ const availableActions = {
     if (process.env.IS_DOCKER === 'true') {
       return;
     }
-    await runCommand('docker build -q -t anacierdem/libdragon:' + version + ' ./');
+    await runCommand('docker build -t anacierdem/libdragon:' + version + ' ./');
     await startToolchain();
   },
   install: async function install() {
