@@ -1,4 +1,6 @@
 # Libdragon
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fanacierdem%2Flibdragon.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fanacierdem%2Flibdragon?ref=badge_shield)
+
 
 This is a simple library for N64 that allows one to code using the gcc compiler suite and nothing else. No proprietary library is needed.
 
@@ -133,3 +135,7 @@ To get started from scratch, follow the following steps:
 
 You are now ready to run the examples on your N64.
 For more information, visit http://www.dragonminded.com/n64dev/
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fanacierdem%2Flibdragon.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fanacierdem%2Flibdragon?ref=badge_large)
